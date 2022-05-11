@@ -2,7 +2,7 @@ const fs = require('fs');
 const invoiceData = fs.readFileSync(`${__dirname}\\invoice.json`, { encoding: 'utf-8', flag: 'r' });
 const invoiceObj = JSON.parse(invoiceData);
 
-const playData = fs.readFileSync( `${__dirname}\\plays.json`, { encoding: 'utf-8', flag: 'r' });
+const playData = fs.readFileSync(`${__dirname}\\plays.json`, { encoding: 'utf-8', flag: 'r' });
 const playObj = JSON.parse(playData);
 
 const result = statement(invoiceObj[0], playObj);
@@ -19,33 +19,35 @@ function statement(invoice, plays) {
     minimumFractionDigits: 2,
   }).format;
 
-  
-function amountFor(pref, play) {
-  let result = 0;
+  function amountFor(aPerfomance, play) {
+    let result = 0;
 
-  switch (play.type) {
-    case 'tragedy':
-      result = 40000;
-      if (pref.audience > 30) {
-        result += 1000 * (pref.audience - 30);
-      }
-      break;
-    case 'comedy':
-      result = 30000;
-      if (pref.audience > 20) {
-        result += 10000 + 500 * (pref.audience - 20);
-      }
-      result += 300 * pref.audience;
-      break;
-    default:
-      throw new Error(`알 수 없는 장르 : ${play.type}`);
+    switch (play.type) {
+      case 'tragedy':
+        result = 40000;
+        if (aPerfomance.audience > 30) {
+          result += 1000 * (aPerfomance.audience - 30);
+        }
+        break;
+      case 'comedy':
+        result = 30000;
+        if (aPerfomance.audience > 20) {
+          result += 10000 + 500 * (aPerfomance.audience - 20);
+        }
+        result += 300 * aPerfomance.audience;
+        break;
+      default:
+        throw new Error(`알 수 없는 장르 : ${play.type}`);
+    }
+    return result;
   }
-  return result;
-}
+
+  function playFor(aPerfomance) {
+    return plays[aPerfomance.playID];
+  }
 
   for (const pref of invoice.performances) {
-
-    const play = plays[pref.playID];
+    const play = playFor(pref);
 
     const thisAmount = amountFor(pref, play);
 
@@ -64,4 +66,3 @@ function amountFor(pref, play) {
   result += `적립 포인드 : ${volumeCredits}점`;
   return result;
 }
-
