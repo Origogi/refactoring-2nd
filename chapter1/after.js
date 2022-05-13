@@ -10,6 +10,11 @@ const result = statement(invoiceObj[0], playObj);
 console.log(result);
 
 function statement(invoice, plays) {
+  const statementData = {};
+  return renderPlainText(statementData, invoice, plays);
+}
+
+function renderPlainText(data, invoice, plays) {
   let result = `청구 내역 (고객명 : ${invoice.customer})\n`;
 
   // 청구 내역을 출력한다.
