@@ -10,21 +10,44 @@ const result = statement(invoiceObj[0], playObj);
 console.log(result);
 
 function statement(invoice, plays) {
-  let totalAmount = 0;
-  let volumeCredits = 0;
   let result = `청구 내역 (고객명 : ${invoice.customer})\n`;
+
+  // 청구 내역을 출력한다.
+  for (const pref of invoice.performances) {
+    result += ` ${playFor(pref).name} : ${format(amountFor(pref) / 100)} (${pref.audience}석)\n`;
+  }
+
+  // 포인트를 적립한다.
+  result += `총액 : ${format(totalAmount() / 100)}\n`;
+  result += `적립 포인드 : ${totalVolumeCredits()}점`;
+  return result;
+
+  function totalAmount() {
+    let result = 0;
+    for (const pref of invoice.performances) {
+      result += amountFor(pref);
+    }
+    return result;
+  }
+
+  function totalVolumeCredits() {
+    let result = 0;
+    for (const pref of invoice.performances) {
+      result += volumeCreditsFor(pref);
+    }
+    return result;
+  }
 
   function volumeCreditsFor(aPerfomance) {
     // 포인트를 적립한다.
     let result = 0;
     result += Math.max(aPerfomance.audience - 30, 0);
-  
+
     if ('comedy' == playFor(aPerfomance).type) {
       result += Math.floor(aPerfomance.audience / 5);
     }
     return result;
   }
-  
 
   function amountFor(aPerfomance) {
     let result = 0;
@@ -52,20 +75,7 @@ function statement(invoice, plays) {
   function playFor(aPerfomance) {
     return plays[aPerfomance.playID];
   }
-
-  for (const pref of invoice.performances) {
-    // 포인트를 적립한다.
-    volumeCredits += volumeCreditsFor(pref);
-
-    // 청구 내역을 출력한다.
-    result += ` ${playFor(pref).name} : ${format(amountFor(pref) / 100)} (${pref.audience}석)\n`;
-    totalAmount += amountFor(pref);
-  }
-  result += `총액 : ${format(totalAmount / 100)}\n`;
-  result += `적립 포인드 : ${volumeCredits}점`;
-  return result;
 }
-
 
 function format(aNumber) {
   return new Intl.NumberFormat('en-US', {
