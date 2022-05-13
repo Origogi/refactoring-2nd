@@ -46,19 +46,24 @@ function statement(invoice, plays) {
     return plays[aPerfomance.playID];
   }
 
-  for (const pref of invoice.performances) {
-    const thisAmount = amountFor(pref);
-
+  function volumeCreditsFor(aPerfomance) {
     // 포인트를 적립한다.
-    volumeCredits += Math.max(pref.audience - 30, 0);
+    let result = 0;
+    volumeCredits += Math.max(aPerfomance.audience - 30, 0);
 
-    if ('comedy' ==  playFor(pref).type) {
-      volumeCredits += Math.floor(pref.audience / 5);
+    if ('comedy' == playFor(aPerfomance).type) {
+      volumeCredits += Math.floor(aPerfomance.audience / 5);
     }
+    return result;
+  }
+
+  for (const pref of invoice.performances) {
+    // 포인트를 적립한다.
+    volumeCredits += volumeCreditsFor(pref);
 
     // 청구 내역을 출력한다.
-    result += ` ${ playFor(pref).name} : ${format(thisAmount / 100)} (${pref.audience}석)\n`;
-    totalAmount += thisAmount;
+    result += ` ${playFor(pref).name} : ${format(amountFor(pref) / 100)} (${pref.audience}석)\n`;
+    totalAmount += amountFor(pref);
   }
   result += `총액 : ${format(totalAmount / 100)}\n`;
   result += `적립 포인드 : ${volumeCredits}점`;
