@@ -12,8 +12,13 @@ console.log(result);
 function statement(invoice, plays) {
   const statementData = {};
   statementData.customer = invoice.customer;
-  statementData.performances = invoice.performances;
+  statementData.performances = invoice.performances.map(enrichPerfomance);
   return renderPlainText(statementData, plays);
+
+  function enrichPerfomance(aPerfomance) {
+    const result = Object.assign({}, aPerfomance);
+    return result;
+  }
 }
 
 function renderPlainText(data, plays) {
