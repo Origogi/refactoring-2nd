@@ -1,8 +1,8 @@
 const fs = require('fs');
-const invoiceData = fs.readFileSync(`${__dirname}\\invoice.json`, { encoding: 'utf-8', flag: 'r' });
+const invoiceData = fs.readFileSync(`${__dirname}/invoice.json`, { encoding: 'utf-8', flag: 'r' });
 const invoiceObj = JSON.parse(invoiceData);
 
-const playData = fs.readFileSync(`${__dirname}\\plays.json`, { encoding: 'utf-8', flag: 'r' });
+const playData = fs.readFileSync(`${__dirname}/plays.json`, { encoding: 'utf-8', flag: 'r' });
 const playObj = JSON.parse(playData);
 
 const result = statement(invoiceObj[0], playObj);
@@ -17,7 +17,12 @@ function statement(invoice, plays) {
 
   function enrichPerfomance(aPerfomance) {
     const result = Object.assign({}, aPerfomance);
+    result.play = playFor(result);
     return result;
+  }
+
+  function playFor(aPerfomance) {
+    return plays[aPerfomance.playID];
   }
 }
 
@@ -26,7 +31,7 @@ function renderPlainText(data, plays) {
 
   // 청구 내역을 출력한다.
   for (const pref of data.performances) {
-    result += ` ${playFor(pref).name} : ${format(amountFor(pref) / 100)} (${pref.audience}석)\n`;
+    result += ` ${pref.play.name} : ${format(amountFor(pref) / 100)} (${pref.audience}석)\n`;
   }
 
   // 포인트를 적립한다.
@@ -55,7 +60,7 @@ function renderPlainText(data, plays) {
     let result = 0;
     result += Math.max(aPerfomance.audience - 30, 0);
 
-    if ('comedy' == playFor(aPerfomance).type) {
+    if ('comedy' == aPerfomance.play.type) {
       result += Math.floor(aPerfomance.audience / 5);
     }
     return result;
@@ -64,7 +69,7 @@ function renderPlainText(data, plays) {
   function amountFor(aPerfomance) {
     let result = 0;
 
-    switch (playFor(aPerfomance).type) {
+    switch (aPerfomance.play.type) {
       case 'tragedy':
         result = 40000;
         if (aPerfomance.audience > 30) {
@@ -79,13 +84,9 @@ function renderPlainText(data, plays) {
         result += 300 * aPerfomance.audience;
         break;
       default:
-        throw new Error(`알 수 없는 장르 : ${playFor(aPerfomance).type}`);
+        throw new Error(`알 수 없는 장르 : ${aPerfomance.play.type}`);
     }
     return result;
-  }
-
-  function playFor(aPerfomance) {
-    return plays[aPerfomance.playID];
   }
 }
 
