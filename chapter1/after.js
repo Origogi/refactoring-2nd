@@ -7,10 +7,6 @@ class PerformaceCalculator {
 async function run() {
   const invoiceData = await (await fetch('/chapter1/invoice.json')).json();
   const playData = await (await fetch('/chapter1/plays.json')).json();
-
-  // const invoiceObj = JSON.parse(invoiceData);
-  // const playeObj = JSON.parse(playData);
-
   const result = statement(invoiceData[0], playData);
 
   console.log(result);
@@ -19,13 +15,16 @@ async function run() {
 run();
 
 function statement(invoice, plays) {
-  const statementData = {};
-  statementData.customer = invoice.customer;
-  statementData.performances = invoice.performances.map(enrichPerfomance);
-  statementData.totalAmount = totalAmount(statementData);
-  statementData.totalVolumeCredits = totalVolumeCredits(statementData);
+  return renderPlainText(createStatementData(invoice, plays));
 
-  return renderPlainText(statementData, plays);
+  function createStatementData(invoice, plays) {
+    const statementData = {};
+    statementData.customer = invoice.customer;
+    statementData.performances = invoice.performances.map(enrichPerfomance);
+    statementData.totalAmount = totalAmount(statementData);
+    statementData.totalVolumeCredits = totalVolumeCredits(statementData);
+    return statementData;
+  }
 
   function enrichPerfomance(aPerfomance) {
     const calculator = new PerformaceCalculator(aPerfomance);
