@@ -4,16 +4,19 @@ class PerformaceCalculator {
   }
 }
 
-const fs = require('fs');
-const invoiceData = fs.readFileSync(`${__dirname}/invoice.json`, { encoding: 'utf-8', flag: 'r' });
-const invoiceObj = JSON.parse(invoiceData);
+async function run() {
+  const invoiceData = await (await fetch('/chapter1/invoice.json')).json();
+  const playData = await (await fetch('/chapter1/plays.json')).json();
 
-const playData = fs.readFileSync(`${__dirname}/plays.json`, { encoding: 'utf-8', flag: 'r' });
-const playObj = JSON.parse(playData);
+  // const invoiceObj = JSON.parse(invoiceData);
+  // const playeObj = JSON.parse(playData);
 
-const result = statement(invoiceObj[0], playObj);
+  const result = statement(invoiceData[0], playData);
 
-console.log(result);
+  console.log(result);
+}
+
+run();
 
 function statement(invoice, plays) {
   const statementData = {};
