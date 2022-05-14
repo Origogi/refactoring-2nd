@@ -1,3 +1,9 @@
+class PerformaceCalculator {
+  constructor(aPerfomance) {
+    this.performance = aPerfomance;
+  }
+}
+
 const fs = require('fs');
 const invoiceData = fs.readFileSync(`${__dirname}/invoice.json`, { encoding: 'utf-8', flag: 'r' });
 const invoiceObj = JSON.parse(invoiceData);
@@ -19,6 +25,8 @@ function statement(invoice, plays) {
   return renderPlainText(statementData, plays);
 
   function enrichPerfomance(aPerfomance) {
+    const calculator = new PerformaceCalculator(aPerfomance);
+
     const result = Object.assign({}, aPerfomance);
     result.play = playFor(result);
     result.amount = amountFor(result);
