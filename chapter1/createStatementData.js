@@ -1,7 +1,32 @@
 class PerformaceCalculator {
-  constructor(aPerfomance) {
+  constructor(aPerfomance, aPlay) {
     this.performance = aPerfomance;
+    this.play = aPlay;
   }
+
+  get amount() {
+    let result = 0;
+
+    switch (this.play.type) {
+      case 'tragedy':
+        result = 40000;
+        if (this.performance.audience > 30) {
+          result += 1000 * (this.performance.audience - 30);
+        }
+        break;
+      case 'comedy':
+        result = 30000;
+        if (this.performance.audience > 20) {
+          result += 10000 + 500 * (this.performance.audience - 20);
+        }
+        result += 300 * this.performance.audience;
+        break;
+      default:
+        throw new Error(`알 수 없는 장르 : ${this.play.type}`);
+    }
+    return result;
+  }
+
 }
 
 export default function createStatementData(invoice, plays) {
@@ -13,11 +38,11 @@ export default function createStatementData(invoice, plays) {
   return statementData;
 
   function enrichPerfomance(aPerfomance) {
-    const calculator = new PerformaceCalculator(aPerfomance);
+    const calculator = new PerformaceCalculator(aPerfomance, playFor(aPerfomance));
 
     const result = Object.assign({}, aPerfomance);
-    result.play = playFor(result);
-    result.amount = amountFor(result);
+    result.play = calculator.play;
+    result.amount = calculator.amount;
     result.volumeCredits = volumeCreditsFor(result);
 
     return result;
@@ -25,29 +50,6 @@ export default function createStatementData(invoice, plays) {
 
   function playFor(aPerfomance) {
     return plays[aPerfomance.playID];
-  }
-
-  function amountFor(aPerfomance) {
-    let result = 0;
-
-    switch (aPerfomance.play.type) {
-      case 'tragedy':
-        result = 40000;
-        if (aPerfomance.audience > 30) {
-          result += 1000 * (aPerfomance.audience - 30);
-        }
-        break;
-      case 'comedy':
-        result = 30000;
-        if (aPerfomance.audience > 20) {
-          result += 10000 + 500 * (aPerfomance.audience - 20);
-        }
-        result += 300 * aPerfomance.audience;
-        break;
-      default:
-        throw new Error(`알 수 없는 장르 : ${aPerfomance.play.type}`);
-    }
-    return result;
   }
 
   function volumeCreditsFor(aPerfomance) {
