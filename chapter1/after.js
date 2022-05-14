@@ -19,6 +19,7 @@ function statement(invoice, plays) {
     const result = Object.assign({}, aPerfomance);
     result.play = playFor(result);
     result.amount = amountFor(result);
+    result.volumeCredits = volumeCreditsFor(result);
 
     return result;
   }
@@ -49,9 +50,20 @@ function statement(invoice, plays) {
     }
     return result;
   }
+
+  function volumeCreditsFor(aPerfomance) {
+    // 포인트를 적립한다.
+    let result = 0;
+    result += Math.max(aPerfomance.audience - 30, 0);
+
+    if ('comedy' == aPerfomance.play.type) {
+      result += Math.floor(aPerfomance.audience / 5);
+    }
+    return result;
+  }
 }
 
-function renderPlainText(data, plays) {
+function renderPlainText(data) {
   let result = `청구 내역 (고객명 : ${data.customer})\n`;
 
   // 청구 내역을 출력한다.
@@ -75,18 +87,7 @@ function renderPlainText(data, plays) {
   function totalVolumeCredits() {
     let result = 0;
     for (const pref of data.performances) {
-      result += volumeCreditsFor(pref);
-    }
-    return result;
-  }
-
-  function volumeCreditsFor(aPerfomance) {
-    // 포인트를 적립한다.
-    let result = 0;
-    result += Math.max(aPerfomance.audience - 30, 0);
-
-    if ('comedy' == aPerfomance.play.type) {
-      result += Math.floor(aPerfomance.audience / 5);
+      result += pref.volumeCredits;
     }
     return result;
   }
