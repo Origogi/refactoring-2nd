@@ -1,11 +1,8 @@
 export function payAmount(employee) {
-  let result;
   if (employee.isSeparated) {
-    result = { amount: 0, reasonCode: 'SEP' };
+    return { amount: 0, reasonCode: 'SEP' };
   } else if (employee.isRetired) {
-    result = { amount: 0, reasonCode: 'RET' };
-  } else {
-    result = { amount: 999, reasonCode: 'UNICORN' };
+    return { amount: 0, reasonCode: 'RET' };
   }
-  return result;
+  return { amount: 999, reasonCode: 'UNICORN' };
 }
