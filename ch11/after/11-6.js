@@ -1,7 +1,6 @@
-targetTemperature(aPlan);
+targetTemperature(aPlan, thermostat.temperature);
 
 // 다른모듈에 있는 함수라고 가정
-function targetTemperature(plan, thermostat) {
-  currentTemperature = thermostat.currentTemperature;
+function targetTemperature(plan, currentTemperature) {
   // ...
 }
