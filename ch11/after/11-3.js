@@ -16,3 +16,4 @@ class Concert {
 
 // 예제 3
 function swtichOn();
+function swtichOff();
