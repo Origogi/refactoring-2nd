@@ -1,27 +1,30 @@
 export function statement(invoice, plays) {
 
-  return renderPlainText(invoice, plays);
+  const statement = {};
 
-  
-  
-}
+  statement.customer = invoice.customer;
+  statement.performances = invoice.performances.map(enrichPerformance);
+  statement.totalAmount = totalAmount(statement.performances);
+  statement.totalCredits = totalCredits(statement.performances);
 
-function renderPlainText(invoice, plays) {
-  let result = `청구 내역 (고객명: ${invoice.customer})\n`;
+  return renderPlainText(statement);
 
-  for (let perf of invoice.performances) {
-    let thisAmount = amountFor(perf);
-    result += `  ${playFor(perf).name}: ${usd(thisAmount / 100)} (${perf.audience}석)\n`;
+  function totalAmount(performances) {
+    return performances.reduce((sum, perf) => perf.amount + sum, 0);
   }
 
-  result += `총액: ${usd(totalAmount() / 100)}\n`;
-  result += `적립 포인트: ${totalVolumeCredits()}점\n`;
-  return result;
+  function totalCredits(performances) {
+    return performances.map((perf) => perf.credits).reduce((a, b) => a + b, 0);
+  }
 
-  // inner functions
+  function enrichPerformance(performance) {
+    const result = { ...performance };
 
-  function totalAmount() {
-    return invoice.performances.reduce((sum, perf) => amountFor(perf) + sum, 0);
+    result.play = playFor(performance)
+    result.amount = amountFor(result);
+    result.credits = creditsFor(result);
+
+    return result;
   }
 
   function playFor(performance) {
@@ -30,7 +33,7 @@ function renderPlainText(invoice, plays) {
 
   function amountFor(performance) {
     let thisAmount = 0;
-    switch (plays[performance.playID].type) {
+    switch (performance.play.type) {
       case 'tragedy': // 비극
         thisAmount = 40000;
         if (performance.audience > 30) {
@@ -50,29 +53,41 @@ function renderPlainText(invoice, plays) {
     return thisAmount;
   }
 
-  function totalVolumeCredits() {
-    return invoice.performances.map((perf) => volumeCreditsFor(perf)).reduce((a, b) => a + b, 0);
-  }
-
-  function volumeCreditsFor(performance) {
+  function creditsFor(performance) {
     let result = Math.max(performance.audience - 30, 0);
     // 희극 관객 5명마다 추가 포인트를 제공한다.
-    if ('comedy' === playFor(performance).type) {
+    if ('comedy' === performance.play.type) {
       result += Math.floor(performance.audience / 5);
     }
     return result;
   }
-
-  function usd(number) {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2,
-    }).format(number);
-  }
 }
 
+function renderPlainText(statement) {
+  let result = `청구 내역 (고객명: ${statement.customer})\n`;
 
+  for (let perf of statement.performances) {
+    let thisAmount = perf.amount;
+    result += `  ${perf.play.name}: ${usd(thisAmount / 100)} (${perf.audience}석)\n`;
+  }
+
+  result += `총액: ${usd(statement.totalAmount / 100)}\n`;
+  result += `적립 포인트: ${statement.totalCredits}점\n`;
+  return result;
+
+  // inner functions
+
+
+
+}
+
+function usd(number) {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+  }).format(number);
+}
 
 
 // 사용예:
