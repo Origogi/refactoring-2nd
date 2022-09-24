@@ -1,19 +1,22 @@
 export function statement(invoice, plays) {
 
-  return renderPlainText();
+  return renderPlainText(invoice, plays);
 
-  function renderPlainText() {
-    let result = `청구 내역 (고객명: ${invoice.customer})\n`;
-
-    for (let perf of invoice.performances) {
-      let thisAmount = amountFor(perf);
-      result += `  ${playFor(perf).name}: ${usd(thisAmount / 100)} (${perf.audience}석)\n`;
-    }
   
-    result += `총액: ${usd(totalAmount() / 100)}\n`;
-    result += `적립 포인트: ${totalVolumeCredits()}점\n`;
-    return result;
+  
+}
+
+function renderPlainText(invoice, plays) {
+  let result = `청구 내역 (고객명: ${invoice.customer})\n`;
+
+  for (let perf of invoice.performances) {
+    let thisAmount = amountFor(perf);
+    result += `  ${playFor(perf).name}: ${usd(thisAmount / 100)} (${perf.audience}석)\n`;
   }
+
+  result += `총액: ${usd(totalAmount() / 100)}\n`;
+  result += `적립 포인트: ${totalVolumeCredits()}점\n`;
+  return result;
 
   // inner functions
 
@@ -59,15 +62,18 @@ export function statement(invoice, plays) {
     }
     return result;
   }
+
+  function usd(number) {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+    }).format(number);
+  }
 }
 
-function usd(number) {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-  }).format(number);
-}
+
+
 
 // 사용예:
 const playsJSON = {
