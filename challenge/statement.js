@@ -1,16 +1,25 @@
 export function statement(invoice, plays) {
-  let totalAmount = 0;
-  let result = `청구 내역 (고객명: ${invoice.customer})\n`;
 
-  for (let perf of invoice.performances) {
-    let thisAmount = amountFor(perf);
+  return renderPlainText();
 
-    result += `  ${playFor(perf).name}: ${usd(thisAmount / 100)} (${perf.audience}석)\n`;
-    totalAmount += thisAmount;
+  function renderPlainText() {
+    let result = `청구 내역 (고객명: ${invoice.customer})\n`;
+
+    for (let perf of invoice.performances) {
+      let thisAmount = amountFor(perf);
+      result += `  ${playFor(perf).name}: ${usd(thisAmount / 100)} (${perf.audience}석)\n`;
+    }
+  
+    result += `총액: ${usd(totalAmount() / 100)}\n`;
+    result += `적립 포인트: ${totalVolumeCredits()}점\n`;
+    return result;
   }
-  result += `총액: ${usd(totalAmount / 100)}\n`;
-  result += `적립 포인트: ${totalVolumeCredits()}점\n`;
-  return result;
+
+  // inner functions
+
+  function totalAmount() {
+    return invoice.performances.reduce((sum, perf) => amountFor(perf) + sum, 0);
+  }
 
   function playFor(performance) {
     return plays[performance.playID];
@@ -39,9 +48,7 @@ export function statement(invoice, plays) {
   }
 
   function totalVolumeCredits() {
-    return invoice.performances
-      .map(perf => volumeCreditsFor(perf))
-      .reduce((a, b) => a+ b, 0)
+    return invoice.performances.map((perf) => volumeCreditsFor(perf)).reduce((a, b) => a + b, 0);
   }
 
   function volumeCreditsFor(performance) {
