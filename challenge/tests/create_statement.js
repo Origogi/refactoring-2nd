@@ -15,35 +15,41 @@ class Performance {
     return this.#play;
   }
 
-  get amount() {
-    let thisAmount = 0;
-    switch (this.#play.type) {
-      case 'tragedy': // 비극
-        thisAmount = 40000;
-        if (this.#audience > 30) {
-          thisAmount += 1000 * (this.#audience - 30);
-        }
-        break;
-      case 'comedy': // 희극
-        thisAmount = 30000;
-        if (this.#audience > 20) {
-          thisAmount += 10000 + 500 * (this.#audience - 20);
-        }
-        thisAmount += 300 * this.#audience;
-        break;
-      default:
-        throw new Error(`알 수 없는 장르: ${this.#play.type}`);
+  static create(audience, play) {
+    switch(play.type) {
+      case 'tragedy' :
+        return new Tragedy(audience, play);
+      case 'comedy' :
+        return new Comedy(audience, play);
+        default :
+        throw new Error(`Unknown type ${play.type}`)
     }
-    return thisAmount;
+  }
+}
+
+class Tragedy extends Performance {
+  get amount() {
+    return (this.audience > 30 ? 1000 * (this.audience - 30) : 0) 
+      + 40000;
   }
 
   get credits() {
-    let result = Math.max(this.#audience - 30, 0);
-    // 희극 관객 5명마다 추가 포인트를 제공한다.
-    if ('comedy' === this.#play.type) {
-      result += Math.floor(this.#audience / 5);
+    return Math.max(this.audience - 30, 0);
+  }
+}
+
+class Comedy extends Performance {
+  get amount() {
+    let result = 30000;
+    if (this.audience > 20) {
+      result += 10000 + 500 * (this.audience - 20);
     }
+    result += 300 * this.audience;
     return result;
+  }
+
+  get credits() {
+    return Math.max(this.audience - 30, 0) + Math.floor(this.audience / 5);
   }
 }
 
@@ -52,7 +58,7 @@ export function createStatememt(invoice, plays) {
 
   result.customer = invoice.customer;
   result.performances = invoice.performances.map(
-    (p) => new Performance(p.audience, plays[p.playID])
+    (p) =>  Performance.create(p.audience, plays[p.playID])
   );
   result.totalAmount = totalAmount(result.performances);
   result.totalCredits = totalCredits(result.performances);
