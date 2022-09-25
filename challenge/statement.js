@@ -1,11 +1,11 @@
-import { createStatememt } from './tests/create_statement';
+import { Statement } from './tests/create_statement';
 
 export function statement(invoice, plays) {
-  return renderPlainText(createStatememt(invoice, plays));
+  return renderPlainText(new Statement(invoice, plays));
 }
 
 export function htmlStatement(invoice, plays) {
-  return renderHTML(createStatememt(invoice, plays));
+  return renderHTML(new Statement(invoice, plays));
 }
 
 function renderHTML(statement) {
