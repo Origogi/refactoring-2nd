@@ -13,6 +13,25 @@ class Console {
   }
 }
 
+class Clock {
+  constructor() {}
+
+  get today() {
+    return {
+        getFullYear() {
+            return 2022;
+        },
+
+        getMonth() {
+            return 8;
+        },
+        getDate() {
+            return 26;
+        }
+    }
+  }
+}
+
 describe('printOwing', () => {
   it('should print owing', () => {
     const expected =
@@ -29,7 +48,7 @@ describe('printOwing', () => {
     };
 
     const console = new Console();
-    printOwing(invoice, console);
+    printOwing(invoice, console, new Clock());
     expect(console.content).toBe(expected);
   });
 });

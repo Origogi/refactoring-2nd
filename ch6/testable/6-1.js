@@ -1,4 +1,4 @@
-export function printOwing(invoice, console) {
+export function printOwing(invoice, console, clock) {
   let outstanding = 0;
 
   console.log('***********************');
@@ -11,7 +11,7 @@ export function printOwing(invoice, console) {
   }
 
   // record due date
-  const today = new Date();
+  const today = clock.today;
   invoice.dueDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 30);
 
   //print details
@@ -19,3 +19,21 @@ export function printOwing(invoice, console) {
   console.log(`amount: ${outstanding}`);
   console.log(`due: ${invoice.dueDate.toLocaleDateString()}`);
 }
+
+const invoice = {
+  orders: [{ amount: 2 }, { amount: 5 }],
+  customer: '엘리',
+};
+
+
+class Clock {
+  constructor() {
+
+  }
+
+  get today() {
+    return new Date();
+  }
+}
+
+printOwing(invoice, console, new Clock());
