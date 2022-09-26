@@ -1,11 +1,9 @@
-export function printOwing(invoice) {
+export function printOwing(invoice, console) {
   let outstanding = 0;
 
-  let result = '';
-
-  result += '***********************\n';
-  result += '**** Customer Owes ****\n';
-  result += '***********************\n';
+  console.log('***********************');
+  console.log('**** Customer Owes ****');
+  console.log('***********************');
 
   // calculate outstanding
   for (const o of invoice.orders) {
@@ -14,22 +12,10 @@ export function printOwing(invoice) {
 
   // record due date
   const today = new Date();
-  invoice.dueDate = new Date(
-    today.getFullYear(),
-    today.getMonth(),
-    today.getDate() + 30
-  );
+  invoice.dueDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 30);
 
   //print details
-  result += `name: ${invoice.customer}\n`;
-  result += `amount: ${outstanding}\n`;
-  result += `due: ${invoice.dueDate.toLocaleDateString()}\n`;
-
-  return result;
+  console.log(`name: ${invoice.customer}`);
+  console.log(`amount: ${outstanding}`);
+  console.log(`due: ${invoice.dueDate.toLocaleDateString()}`);
 }
-
-const invoice = {
-  orders: [{ amount: 2 }, { amount: 5 }],
-  customer: '엘리',
-};
-console.log(printOwing(invoice));

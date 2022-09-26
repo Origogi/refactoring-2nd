@@ -1,5 +1,18 @@
 import { printOwing } from '../6-1.js';
 
+class Console {
+  #content = '';
+  constructor() {}
+
+  log(message) {
+    this.#content += `${message}\n`;
+  }
+
+  get content() {
+    return this.#content;
+  }
+}
+
 describe('printOwing', () => {
   it('should print owing', () => {
     const expected =
@@ -14,6 +27,9 @@ describe('printOwing', () => {
       orders: [{ amount: 2 }, { amount: 5 }],
       customer: '엘리',
     };
-    expect(printOwing(invoice)).toBe(expected);
+
+    const console = new Console();
+    printOwing(invoice, console);
+    expect(console.content).toBe(expected);
   });
 });
